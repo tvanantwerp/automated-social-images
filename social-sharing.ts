@@ -33,7 +33,7 @@ export async function createSoicalImage(name: string): Promise<Canvas> {
 export async function saveImageToFile(
 	name: string,
 	canvas: Canvas,
-	format?: ExportFormat,
+	format: ExportFormat,
 ) {
 	await canvas.saveAs(name, { format });
 }

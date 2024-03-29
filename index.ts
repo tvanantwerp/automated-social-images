@@ -12,7 +12,7 @@ const postNames = [
 
 async function createAndSaveLocally(name: string) {
 	const canvas = await createSoicalImage(name);
-	await saveImageToFile(name, canvas);
+	await saveImageToFile(name, canvas, 'png');
 }
 
 async function createAndUpload(name: string) {
