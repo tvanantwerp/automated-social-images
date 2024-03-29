@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
+import slugify from 'slugify';
 import { Canvas, loadImage, ExportFormat, FontLibrary } from 'skia-canvas';
 import { cloudinary } from './cloudinary.config';
 
@@ -40,7 +41,7 @@ export async function saveImageToFile(
 	if (!existsSync('./images')) {
 		mkdirSync('./images');
 	}
-	await canvas.saveAs(join('./images', name), { format });
+	await canvas.saveAs(join('./images', slugify(name)), { format });
 }
 
 export async function uploadToCloudinary(canvas: Canvas) {
