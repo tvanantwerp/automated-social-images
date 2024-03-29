@@ -10,8 +10,16 @@ const postNames = [
 	'Building Responsive Interfaces with React Hooks: A Comprehensive Guide',
 ];
 
+async function createAndSaveLocally(name: string) {
+	const canvas = await createSoicalImage(name);
+	await saveImageToFile(name, canvas);
+}
+
+async function createAndUpload(name: string) {
+	const canvas = await createSoicalImage(name);
+	await uploadToCloudinary(canvas);
+}
+
 for (const post of postNames) {
-	const canvas = createSoicalImage(post);
-	saveImageToFile(post, canvas);
-	// uploadToCloudinary(canvas);
+	createAndSaveLocally(post);
 }

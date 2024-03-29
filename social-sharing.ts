@@ -22,6 +22,11 @@ export async function createSoicalImage(name: string): Promise<Canvas> {
 	FontLibrary.use(['./assets/Inter-SemiBold.ttf']);
 	ctx.font = '48px Inter';
 
+	// Write the title of the shared webpage.
+	ctx.fillStyle = '#333';
+	ctx.textWrap = true;
+	ctx.fillText(name, 50, 100, width - 100);
+
 	return canvas;
 }
 
