@@ -41,7 +41,10 @@ export async function saveImageToFile(
 	if (!existsSync('./images')) {
 		mkdirSync('./images');
 	}
-	await canvas.saveAs(join('./images', slugify(name)), { format });
+	await canvas.saveAs(
+		join('./images', slugify(`${name}.png`, { lower: true })),
+		{ format },
+	);
 }
 
 export async function uploadToCloudinary(canvas: Canvas) {
