@@ -67,7 +67,7 @@ export async function saveImageToFile(
 		mkdirSync('./images');
 	}
 	await canvas.saveAs(
-		join('./images', slugify(`${name}.png`, { lower: true })),
+		join('./images', `${slugify(name, { lower: true, strict: true })}.png`),
 		{ format, density: 2 },
 	);
 }
