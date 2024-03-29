@@ -21,17 +21,39 @@ export async function createSoicalImage(name: string): Promise<Canvas> {
 	const image = await loadImage('./assets/background.png');
 	ctx.drawImage(image, 0, 0, width, height);
 
+	const textX = 50;
+	const textY = 100;
+	const maxWidth = width - textX * 2;
+
 	// Load the Inter font, weight 600, available on Google Fonts.
 	FontLibrary.use(['./assets/Inter-SemiBold.ttf']);
-	ctx.font = '96px Inter';
+	ctx.textWrap = true;
+	let fontSize = 96;
+	let textFits = false;
+	while (!textFits || fontSize < 24) {
+		ctx.font = `${fontSize}px Inter`;
+		const metrics = ctx.measureText(name, maxWidth - textX);
+		let totalTextHeight = metrics.lines.reduce(
+			(acc, line) => acc + line.height,
+			0,
+		);
+		if (totalTextHeight > height - textY) {
+			fontSize -= 4;
+		} else {
+			textFits = true;
+		}
+	}
+
+	if (!textFits && fontSize < 24) {
+		throw new Error('Text is too long to fit on the image.');
+	}
 
 	// Write the title of the shared webpage.
 	ctx.fillStyle = '#100F0F';
 	ctx.lineWidth = 6;
 	ctx.strokeStyle = 'rgba(247, 238, 217, 0.5)';
-	ctx.textWrap = true;
-	ctx.strokeText(name, 50, 100, width - 100);
-	ctx.fillText(name, 50, 100, width - 100);
+	ctx.strokeText(name, textX, textY, maxWidth);
+	ctx.fillText(name, textX, textY, maxWidth);
 
 	return canvas;
 }
