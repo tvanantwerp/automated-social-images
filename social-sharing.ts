@@ -72,17 +72,29 @@ export async function saveImageToFile(
 	);
 }
 
-export async function uploadToCloudinary(canvas: Canvas) {
+export async function uploadToCloudinary(
+	name: string,
+	canvas: Canvas,
+	format: ExportFormat,
+) {
 	// "Save" the canvas to a Node Buffer.
-	const buffer = await canvas.toBuffer('png', { density: 2 });
+	const buffer = await canvas.toBuffer(format, { density: 2 });
 	// Upload the buffer to Cloudinary.
 	cloudinary.uploader
-		.upload_stream({}, (err, res) => {
-			if (err) {
-				console.error(err);
-				return;
-			}
-			console.log(res);
-		})
+		.upload_stream(
+			{
+				public_id: `${slugify(name, { lower: true, strict: true })}.png`,
+				folder: 'og-images',
+				format,
+				overwrite: true,
+			},
+			(err, res) => {
+				if (err) {
+					console.error(err);
+					return;
+				}
+				console.log(res);
+			},
+		)
 		.end(buffer);
 }

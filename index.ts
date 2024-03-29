@@ -20,9 +20,10 @@ async function createAndSaveLocally(name: string) {
 
 async function createAndUpload(name: string) {
 	const canvas = await createSoicalImage(name);
-	await uploadToCloudinary(canvas);
+	await uploadToCloudinary(name, canvas, 'png');
 }
 
 for (const post of postNames) {
-	createAndSaveLocally(post);
+	// createAndSaveLocally(post);
+	createAndUpload(post);
 }
