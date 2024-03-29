@@ -27,7 +27,10 @@ export async function createSoicalImage(name: string): Promise<Canvas> {
 
 	// Write the title of the shared webpage.
 	ctx.fillStyle = '#100F0F';
+	ctx.lineWidth = 6;
+	ctx.strokeStyle = 'rgba(247, 238, 217, 0.5)';
 	ctx.textWrap = true;
+	ctx.strokeText(name, 50, 100, width - 100);
 	ctx.fillText(name, 50, 100, width - 100);
 
 	return canvas;
@@ -43,13 +46,13 @@ export async function saveImageToFile(
 	}
 	await canvas.saveAs(
 		join('./images', slugify(`${name}.png`, { lower: true })),
-		{ format },
+		{ format, density: 2 },
 	);
 }
 
 export async function uploadToCloudinary(canvas: Canvas) {
 	// "Save" the canvas to a Node Buffer.
-	const buffer = await canvas.toBuffer('png');
+	const buffer = await canvas.toBuffer('png', { density: 2 });
 	// Upload the buffer to Cloudinary.
 	cloudinary.uploader
 		.upload_stream({}, (err, res) => {
