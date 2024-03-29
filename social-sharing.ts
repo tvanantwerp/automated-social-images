@@ -83,7 +83,7 @@ export async function uploadToCloudinary(
 	cloudinary.uploader
 		.upload_stream(
 			{
-				public_id: `${slugify(name, { lower: true, strict: true })}.png`,
+				public_id: slugify(name, { lower: true, strict: true }),
 				folder: 'og-images',
 				format,
 				overwrite: true,
