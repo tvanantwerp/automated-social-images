@@ -20,10 +20,10 @@ export async function createSoicalImage(name: string): Promise<Canvas> {
 
 	// Load the Inter font, weight 600, available on Google Fonts.
 	FontLibrary.use(['./assets/Inter-SemiBold.ttf']);
-	ctx.font = '48px Inter';
+	ctx.font = '96px Inter';
 
 	// Write the title of the shared webpage.
-	ctx.fillStyle = '#333';
+	ctx.fillStyle = '#100F0F';
 	ctx.textWrap = true;
 	ctx.fillText(name, 50, 100, width - 100);
 
