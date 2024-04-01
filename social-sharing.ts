@@ -58,6 +58,10 @@ export async function createSoicalImage(name: string): Promise<Canvas> {
 	return canvas;
 }
 
+function slugifyName(name: string) {
+	return slugify(name, { lower: true, strict: true, remove: /[?&#\\%<>\+]]/g });
+}
+
 export async function saveImageToFile(
 	name: string,
 	canvas: Canvas,
@@ -66,10 +70,10 @@ export async function saveImageToFile(
 	if (!existsSync('./images')) {
 		mkdirSync('./images');
 	}
-	await canvas.saveAs(
-		join('./images', `${slugify(name, { lower: true, strict: true })}.png`),
-		{ format, density: 2 },
-	);
+	await canvas.saveAs(join('./images', `${slugifyName(name)}.png`), {
+		format,
+		density: 2,
+	});
 }
 
 export async function uploadToCloudinary(
@@ -83,7 +87,7 @@ export async function uploadToCloudinary(
 	cloudinary.uploader
 		.upload_stream(
 			{
-				public_id: slugify(name, { lower: true, strict: true }),
+				public_id: slugifyName(name),
 				folder: 'og-images',
 				format,
 				overwrite: true,
