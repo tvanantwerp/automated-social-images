@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
+import { createHash } from 'crypto';
 import slugify from 'slugify';
 import { Canvas, loadImage, ExportFormat, FontLibrary } from 'skia-canvas';
 import { cloudinary } from './cloudinary.config';
@@ -76,29 +77,55 @@ export async function saveImageToFile(
 	});
 }
 
+function getImageHash(buffer: Buffer) {
+	return createHash('md5').update(buffer).digest('hex');
+}
+
 export async function uploadToCloudinary(
 	name: string,
 	canvas: Canvas,
 	format: ExportFormat,
 ) {
-	// "Save" the canvas to a Node Buffer.
-	const buffer = await canvas.toBuffer(format, { density: 2 });
-	// Upload the buffer to Cloudinary.
-	cloudinary.uploader
-		.upload_stream(
+	try {
+		const folder = 'og-images';
+		// We'll use the slugified name as the public_id.
+		const public_id = slugifyName(name);
+		// No need to save to a local file, we can upload directly to Cloudinary with a Buffer.
+		const buffer = await canvas.toBuffer(format, { density: 2 });
+
+		// We'll use the hash of the image to prevent duplicates.
+		const hash = getImageHash(buffer);
+
+		const existingResources = await cloudinary.api.resource(
+			`${folder}/${public_id}`,
 			{
-				public_id: slugifyName(name),
-				folder: 'og-images',
-				format,
-				overwrite: true,
+				context: true,
 			},
-			(err, res) => {
-				if (err) {
-					console.error(err);
-					return;
-				}
-				console.log(res);
-			},
-		)
-		.end(buffer);
+		);
+		if (existingResources && existingResources.context?.custom?.hash === hash) {
+			console.log(`No change to ${public_id}. Skipping upload.`);
+			return;
+		} else {
+			console.log(`Uploading ${public_id}.`);
+			cloudinary.uploader
+				.upload_stream(
+					{
+						public_id,
+						folder,
+						format,
+						overwrite: true,
+						context: `hash=${hash}`,
+					},
+					(err, _) => {
+						if (err) {
+							console.error(err);
+							return;
+						}
+					},
+				)
+				.end(buffer);
+		}
+	} catch (error) {
+		console.error(error);
+	}
 }
