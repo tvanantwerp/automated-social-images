@@ -2,7 +2,7 @@ import {
 	createSoicalImage,
 	saveImageToFile,
 	uploadToCloudinary,
-} from './social-sharing';
+} from './src/social-sharing';
 
 const postNames = [
 	'Leveraging TypeScript for Scalable Web Applications: Strategies and Best Practices',

@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"description": "Generate social sharing images automatically with Node and upload to Cloudinary.",
 	"scripts": {
-		"generateImages": "tsx --env-file=.env index.ts"
+		"generateImages": "tsx --env-file=.env ./src/index.ts"
 	},
 	"author": "Tom VanAntwerp",
 	"dependencies": {
