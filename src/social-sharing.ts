@@ -10,10 +10,10 @@ import { cloudinary } from './cloudinary.config';
 // support out-of-the-box.
 
 export async function createSoicalImage(name: string): Promise<Canvas> {
-	// Most social media platforms have and image ratio of 1.91:1.
+	// Most social media platforms have an image ratio of 1.91:1.
 	// Facebook recommends 1200x630, X/Twitter 800x418, LinkedIn 1200x627.
 	// Facebook's recommendation will work well for all platforms, so we'll use that.
-	// These dimensions were chosen in March, 2024. They may change in the future.
+	// These dimensions were chosen in May, 2024. They may change in the future.
 	const canvas = new Canvas(1200, 630);
 	const { width, height } = canvas;
 	const ctx = canvas.getContext('2d');
@@ -50,9 +50,9 @@ export async function createSoicalImage(name: string): Promise<Canvas> {
 	}
 
 	// Write the title of the shared webpage.
-	ctx.fillStyle = '#100F0F';
+	ctx.fillStyle = 'rgba(16, 15, 15, 0.9)';
 	ctx.lineWidth = 6;
-	ctx.strokeStyle = 'rgba(247, 238, 217, 0.5)';
+	ctx.strokeStyle = 'rgba(247, 238, 217, 0.2)';
 	ctx.strokeText(name, textX, textY, maxWidth);
 	ctx.fillText(name, textX, textY, maxWidth);
 
