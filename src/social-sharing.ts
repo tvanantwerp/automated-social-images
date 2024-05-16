@@ -71,7 +71,7 @@ export async function saveImageToFile(
 	if (!existsSync('./images')) {
 		mkdirSync('./images');
 	}
-	await canvas.saveAs(join('./images', `${slugifyName(name)}.png`), {
+	await canvas.saveAs(join('./images', `${slugifyName(name)}.${format}`), {
 		format,
 		density: 2,
 	});
