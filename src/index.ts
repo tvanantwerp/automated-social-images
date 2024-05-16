@@ -24,6 +24,6 @@ async function createAndUpload(name: string) {
 }
 
 for (const post of postNames) {
-	// createAndSaveLocally(post);
+	createAndSaveLocally(post);
 	createAndUpload(post);
 }

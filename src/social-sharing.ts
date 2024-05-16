@@ -31,7 +31,7 @@ export async function createSocialImage(name: string): Promise<Canvas> {
 	ctx.textWrap = true;
 	let fontSize = 96;
 	let textFits = false;
-	while (!textFits || fontSize < 24) {
+	while (!textFits && fontSize >= 24) {
 		ctx.font = `${fontSize}px Inter`;
 		const metrics = ctx.measureText(name, maxWidth - textX);
 		let totalTextHeight = metrics.lines.reduce(
