@@ -1,5 +1,5 @@
 import {
-	createSoicalImage,
+	createSocialImage,
 	saveImageToFile,
 	uploadToCloudinary,
 } from './social-sharing';
@@ -14,12 +14,12 @@ const postNames = [
 ];
 
 async function createAndSaveLocally(name: string) {
-	const canvas = await createSoicalImage(name);
+	const canvas = await createSocialImage(name);
 	await saveImageToFile(name, canvas, 'png');
 }
 
 async function createAndUpload(name: string) {
-	const canvas = await createSoicalImage(name);
+	const canvas = await createSocialImage(name);
 	await uploadToCloudinary(name, canvas, 'png');
 }
 

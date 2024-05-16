@@ -9,7 +9,7 @@ import { cloudinary } from './cloudinary.config';
 // This is to make it easier to wrap text, which native canvas doesn't
 // support out-of-the-box.
 
-export async function createSoicalImage(name: string): Promise<Canvas> {
+export async function createSocialImage(name: string): Promise<Canvas> {
 	// Most social media platforms have an image ratio of 1.91:1.
 	// Facebook recommends 1200x630, X/Twitter 800x418, LinkedIn 1200x627.
 	// Facebook's recommendation will work well for all platforms, so we'll use that.
