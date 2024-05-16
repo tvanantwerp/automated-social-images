@@ -121,8 +121,9 @@ export async function uploadToCloudinary(
 					},
 					(err, _) => {
 						if (err) {
-							console.error(err);
-							return;
+							throw new Error(`Failed to upload image for "${name}"`, {
+								cause: err,
+							});
 						}
 					},
 				)
