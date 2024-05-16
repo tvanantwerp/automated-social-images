@@ -96,12 +96,15 @@ export async function uploadToCloudinary(
 		// We'll use the hash of the image to prevent duplicates.
 		const hash = getImageHash(buffer);
 
-		const existingResources = await cloudinary.api.resource(
-			`${folder}/${public_id}`,
-			{
+		const existingResources = await cloudinary.api
+			.resource(`${folder}/${public_id}`, {
 				context: true,
-			},
-		);
+			})
+			.catch(error => {
+				if (error.error.http_code !== 404) {
+					throw error;
+				}
+			});
 		if (existingResources && existingResources.context?.custom?.hash === hash) {
 			console.log(`No change to ${public_id}. Skipping upload.`);
 			return;
