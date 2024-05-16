@@ -6,6 +6,7 @@ import {
 
 const postNames = [
 	'Example post name',
+	'Another test',
 	'Whatever example post name you want to save to an image!',
 	'Leveraging TypeScript for Scalable Web Applications: Strategies and Best Practices',
 	'Next-Gen Web Performance Optimization: Techniques for 2024',
