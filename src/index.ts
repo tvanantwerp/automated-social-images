@@ -5,6 +5,8 @@ import {
 } from './social-sharing';
 
 const postNames = [
+	'Example post name',
+	'Whatever example post name you want to save to an image!',
 	'Leveraging TypeScript for Scalable Web Applications: Strategies and Best Practices',
 	'Next-Gen Web Performance Optimization: Techniques for 2024',
 	'Building Responsive Interfaces with React Hooks: A Comprehensive Guide',
