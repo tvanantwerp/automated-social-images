@@ -2,6 +2,10 @@
 
 ## Introduction
 
+When you share a link on social media, the platform will often display a preview of the content. This preview usually includes a title, a description, and an image. The image is called a "social cover image" or "social card". It's a visual representation of the content you're sharing, and it's important for attracting clicks and engagement.
+
+Creating these images manually can be time-consuming, especially if you have a lot of content to share and you want a similar style of image for each page. In this tutorial, we'll show you how to automatically generate social cover images for your blog posts using Node.js and the Cloudinary API.
+
 ## Generating Social Cover Images with Canvas
 
 There are several ways to use web technology to generate images. Perhaps the most obvious is to use the [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). With canvas, we can load images, draw shapes, write text, and create a new image file.
