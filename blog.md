@@ -2,17 +2,24 @@
 
 ## Introduction
 
-When you share a link on social media, the platform will often display a preview of the content. This preview usually includes a title, a description, and an image. The image is called a "social cover image" or "social card". It's a visual representation of the content you're sharing, and it's important for attracting clicks and engagement.
+When you share a link on social media, the platform often displays a preview of the content. Creating these images manually can be time-consuming, especially if you have a lot of content to share and want a consistent style for each page. Wouldn’t it be better if we could automate this?
 
-Creating these images manually can be time-consuming, especially if you have a lot of content to share and you want a similar style of image for each page. In this tutorial, we'll show you how to automatically generate social cover images for your blog posts using Node.js and the Cloudinary API.
+In this tutorial, we'll show you how to automatically generate social cover images for your blog posts using Node.js and the Skia Canvas library. Then, once the images are generated, we’ll upload them to Cloudinary with the Cloudinary API.
 
 Using [Cloudinary](https://cloudinary.com/), we can host our images and serve them quickly to our users. We can also use Cloudinary to optimize our images for the web, ensuring they load quickly and look great on any device. Cloudinary does the hard work of resizing, compressing, and delivering images to users for us!
 
+This tutorial will cover:
+
+- Creating images for your web content using Skia Canvas and Node.js
+- Saving those images locally for testing purposes
+- Uploading these images to Cloudinary for hosting and delivery
+- Avoiding unnecessary image uploads at build time if nothing has changed
+
 ## Generating Social Cover Images with Canvas
 
-Before we can upload our social images to Cloudinary, we need to generate them! There are several ways to use web technology to generate images. Perhaps the most obvious is to use the [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). With canvas, we can load images, draw shapes, write text, and create a new image file.
+Before uploading our social images to Cloudinary, we need to generate them! There are several ways to use web technology to generate images. Perhaps the most obvious is to use the [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). We can load images, draw shapes, write text, and create a new image file with canvas.
 
-But there are two downsides to canvas: first, it is a browser API and we're generating in the back end with Node.js. Second, it doesn't have a native way to wrap text within a bounding box. To use canvas in Node and because it is time-consuming and challenging to implement text wrapping ourselves, we'll use the [Skia Canvas](https://github.com/samizdatco/skia-canvas) library. This library is based on Google's Skia graphics engine and re-implements and extends the canvas API for Node.js. It includes functionality for text wrapping, saving us the trouble of having to do it ourselves.
+However, canvas has two downsides: first, it is a browser API, and we're generating it on the back end with Node.js. Second, it doesn't have a native way to wrap text within a bounding box. To use canvas in Node and because it is time-consuming and challenging to implement text wrapping ourselves, we'll use the [Skia Canvas](https://github.com/samizdatco/skia-canvas) library. This library is based on Google's Skia graphics engine and re-implements and extends the canvas API for Node.js. It includes functionality for text wrapping, saving us the trouble of doing it ourselves.
 
 Let's start by creating a new Node.js project and installing the `skia-canvas` package.
 
@@ -23,7 +30,7 @@ npm init -y
 npm install skia-canvas
 ```
 
-Next we'll be creating a function that we'll use to generate our social image from a post name using `skia-canvas`. First, we'll import `Canvas` and create an instance to use.
+Next we'll be creating a function that we'll use to generate our social image from a post name using `skia-canvas`. First, we'll import `Canvas` and create an instance.
 
 ```typescript
 import { Canvas } from 'skia-canvas';
@@ -36,7 +43,7 @@ export async function createSocialImage(name: string): Promise<Canvas> {
 	// Most social media platforms have an image ratio of 1.91:1.
 	// Facebook recommends 1200x630, X/Twitter 800x418, LinkedIn 1200x627.
 	// Facebook's recommendation will work well for all platforms, so we'll use that.
-	// These dimensions were chosen in May, 2024. They may change in the future.
+	// These dimensions were chosen in May 2024. They may change in the future.
 	const canvas = new Canvas(1200, 630);
 	const { width, height } = canvas;
 	const ctx = canvas.getContext('2d');
@@ -56,13 +63,13 @@ export async function createSocialImage(name: string): Promise<Canvas> {
 }
 ```
 
-Next, we'll get ready to draw the text. While `skia-canvas` helps with wrapping text, we still have the possibility that text could overflow the bottom of the image. To handle this, we're going to write some code to scale the text size to fit within the image. If it's not possible to fit the text without it becoming too small, we'll throw an error.
+Next, we'll get ready to draw the text. While `skia-canvas` helps with wrapping text, we still have the possibility that text could overflow the bottom of the image. To handle this, we will write some code to scale the text size to fit within the image. If it's impossible to fit the text without it becoming too small, we'll throw an error.
 
-We start by setting the initial position of our text, `textX` and `textY`, and the maximum width of the text, `maxWidth`. We then load the font we want to use. In this case, we're using the [Inter](https://fonts.google.com/specimen/Inter) font, weight 600, which is available free to use from Google Fonts.
+We start by setting the initial position of our text, `textX` and `textY`, and the maximum width of the text, `maxWidth`. We then load the font we want to use. In this case, we're using the [Inter](https://fonts.google.com/specimen/Inter) font, font-weight 600, which is free from Google Fonts.
 
-We set the font size to 96 and check if the text fits within the image. To do this, we'll use `ctx.measureText()` to get the lines of text that would be drawn and adding together their heights. If the total height of all lines of text is greater than our canvas `height` minus the vertical starting point of `textY`, we reduce the font size by 4 and check again. We continue this process until the text fits or the font size is less than 24. If the text size goes below 24 and it still doesn't fit, the text is going to be too small to look good and we'll give up by throwing an error.
+We set the font size to 96 and check if the text fit within the image. To do this, we'll use `ctx.measureText()` to get the lines of text that would be drawn and add together their heights. If the total height of all lines of text is greater than our canvas `height` minus the vertical starting point of `textY`, we reduce the font size by 4 and check again. We continue this process until the text fits or the font size is less than 24. If the text size goes below 24 and it still doesn't fit, the text will be too small to look good, and we'll give up by throwing an error.
 
-Why not just set a character limit? Because you're probably going to use your own fonts and designs! Different fonts will take up different amounts of space at the same font size, so it's something you'll need to play with for yourself. A character limit won't take this into account, but actually measuring the space used by the drawn text will. When you're making your own designs, you'll have to try different font sizes and see what works best for you.
+Why not just set a character limit? Because you're probably going to use your own fonts and designs! Different fonts will take up different amounts of space at the same font size, so you'll need to play with it for yourself. A character limit won't take this into account, but measuring the space used by the drawn text will. When making your designs, you'll have to try different font sizes and see what works best.
 
 ```typescript
 import { Canvas, loadImage, FontLibrary } from 'skia-canvas';
@@ -99,7 +106,7 @@ export async function createSocialImage(name: string): Promise<Canvas> {
 }
 ```
 
-Finally, now that we've got the correct font size, we can draw our post name to the canvas. For extra readability, we'll add a mostly transparent white stroke to the black text. Once we're done drawing the text, we return the canvas from our function.
+Finally, now that we've got the correct font size, we can draw our post name to the canvas. We'll add a mostly transparent white stroke to the black text for extra readability. Once we're done drawing the text, we return the canvas from our function.
 
 ```typescript
 export async function createSocialImage(name: string): Promise<Canvas> {
@@ -158,7 +165,7 @@ export async function saveImageToFile(
 }
 ```
 
-We've now got everything we need to generate and save our social images.
+We now have everything we need to generate and save our social images.
 
 ```typescript
 async function createAndSaveLocally(name: string) {
@@ -263,7 +270,7 @@ For more details on the Cloudinary Upload API, see the [API documentation](https
 
 ## Avoiding Redundant Uploads
 
-Let's assume we'll use this script with a statically generated blog site. Our website might have dozens, hundreds, or thousands of pages. Most of the time our site is rebuilt, the content of the pages won't change. If there hasn't been any change to our social images, then we really don't need to upload them to Cloudinary at all.
+Let's assume we'll use this script with a statically generated blog site. Our website might have dozens, hundreds, or thousands of pages. Most of the time, when our site is rebuilt, the content of the pages won't change. If our social images haven't changed, then we really don't need to upload them to Cloudinary at all.
 
 To solve this problem, we'll modify our upload function to check if an image already exists in Cloudinary. If it does, we'll skip the upload. If it doesn't, we'll upload the image.
 
@@ -320,3 +327,7 @@ export async function uploadToCloudinary(
 Once your images are uploaded to Cloudinary, you'll want to use the Cloudinary URLs in your site's metadata. You may not want to use the ordinary URLs generated during upload. For example, if we had a post titled "Example Post Name", our image's URL would be `https://res.cloudinary.com/{{cloudinary_cloud_name}}/image/upload/og-images/example-post-name.png`. This is long and unwieldy, and it's not great for SEO.
 
 But, you have options! Cloudinary allows for customizing your image URLs for better SEO. Their [documentation](https://cloudinary.com/blog/how_to_dynamically_create_seo_friendly_urls_for_your_site_s_images) explains how to do this. You can modify URLs to not need `image/upload`, to include dynamic SEO suffixes, or to use your own domain.
+
+## Conclusion
+
+Automating the generation and hosting of social cover images makes it much easier to produce timely content without stressing over how it will look on social media. By combining Skia Canvas and Cloudinary, we were able to create and host social images with minimal effort. Automating social image generation allows you to focus more on creating great content, and not on dealing with the technical details of image hosting and optimization.
